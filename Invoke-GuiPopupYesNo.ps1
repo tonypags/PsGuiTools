@@ -1,5 +1,8 @@
-﻿function Invoke-GuiPopupYesNo ([string]$MessageBody,[string]$MessageTitle)
-{
+﻿function Invoke-GuiPopupYesNo {
+    param (
+        [string]$MessageBody,
+        [string]$MessageTitle
+    )
     Add-Type -AssemblyName PresentationCore,PresentationFramework
     $ButtonType = [System.Windows.MessageBoxButton]::YesNo
     $MessageIcon = [System.Windows.MessageBoxImage]::Question
