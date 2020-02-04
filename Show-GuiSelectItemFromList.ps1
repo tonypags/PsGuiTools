@@ -1,5 +1,22 @@
-﻿function Invoke-GuiSelectItemFromList
-{
+﻿function Show-GuiSelectItemFromList {
+    <#
+    .SYNOPSIS
+    Displays a list from which a user can choose.
+    .DESCRIPTION
+    Displays a pop up window containing a given list of items, allowing non-technical users to leverage an automated routine.
+    .PARAMETER InputArray
+    Array of strings to display for the user to pick from
+    .PARAMETER Title
+    Message for the pop up window title bar
+    .PARAMETER Message
+    Message or Description for list of items
+    .PARAMETER Width
+    Width of popup window in pixels
+    .PARAMETER Height
+    Height of popup window in pixels
+    .EXAMPLE
+    (Get-Process).Name | Show-GuiSelectItemFromList | Stop-Process -WhatIf
+    #>
     [CmdletBinding()]
     [OutputType([string])]
     Param
@@ -9,9 +26,9 @@
                    ValueFromPipeline=$true,
                    Position=0)]
         [string[]]
-        $InputArray=@(),
+        $InputArray,
 
-        # Window Title caption 
+        # Message for the pop up window title bar
         [string]
         $Title='Select an Item',
 
@@ -19,21 +36,37 @@
         [string]
         $Message='Select from the List of Items:',
 
-        # Width or popup window
+        # Width of popup window in pixels
         [int]
         $Width=600,
 
-        # Height of popup window 
+        # Height of popup window in pixels
         [int]
         $Height=300
 
     )
    
-    Process
-    {
+    Begin {
+
         Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Drawing
 
+        $SelectionArray = [System.Collections.ArrayList]@()
+
+    }
+
+    Process {
+
+        Foreach ($item in $InputArray) {
+            
+            [void] $SelectionArray.Add($item)
+        
+        }
+    
+    }
+
+    End {
+        
         $form = New-Object System.Windows.Forms.Form 
         $form.Text = $Title
         $form.Size = New-Object System.Drawing.Size(($Width),($Height)) # 100% x 100%  
@@ -66,7 +99,7 @@
         $listBox.Size = New-Object System.Drawing.Size(([math]::round(($Width*0.866666667),0)),([math]::round(($Height*0.1),0)))       # 86.67% x 10%
         $listBox.Height = ([math]::round(($Height*0.4),0))  # 40%
 
-        Foreach ($A in $InputArray){
+        Foreach ($A in $SelectionArray){
             [void] $listBox.Items.Add("$A")
         }
 
@@ -74,11 +107,12 @@
         $form.Topmost = $True
         $result = $form.ShowDialog()
 
-        if ($result -eq [System.Windows.Forms.DialogResult]::OK)
-        {
-            $x = $listBox.SelectedItem
-            Write-Output $x 
-        }
-    }
-}
+        if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
 
+            $listBox.SelectedItem
+
+        }
+
+    }
+
+}
