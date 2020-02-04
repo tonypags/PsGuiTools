@@ -1,7 +1,7 @@
 Function Show-GuiFolderPicker {
     <#
     .SYNOPSIS
-    Returns s folder object from a GUI pop up window.
+    Returns a folder object from a GUI pop up window.
     .DESCRIPTION
     Displays a folder picker window for the user, allowing non-technical users to leverage an automated routine.
     .PARAMETER Title
@@ -11,7 +11,7 @@ Function Show-GuiFolderPicker {
     .PARAMETER outString
     Limit the output to a string value
     .EXAMPLE
-    Show-GuiFilePicker -Title 'Select a File' -Single
+    $SaveFolder = Show-GuiFolderPicker
     .NOTES
     InitialDirectory ENUM: https://msdn.microsoft.com/en-us/library/system.environment.specialfolder(v=vs.110).aspx
     #>

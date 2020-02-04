@@ -1,7 +1,7 @@
 ﻿function Show-GuiFilePicker {   
     <#
     .SYNOPSIS
-    Returns file objects from GUI pop up window.
+    Returns file objects from a GUI pop up window.
     .DESCRIPTION
     Displays a file picker window for the user, allowing non-technical users to leverage an automated routine.
     .PARAMETER Title
