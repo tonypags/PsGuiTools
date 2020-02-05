@@ -2,9 +2,9 @@
 
     <#
     .SYNOPSIS
-    Various window pop up configurations
+    Text input dialog window
     .DESCRIPTION
-    Displays a popup window with which a non-technical user can interact, with options such as OK, Cancel, YesNo, Error, etc
+    Displays a popup window with which a non-technical user can enter a string value for an automated routine
     .PARAMETER Title
     Message for the pop up window title bar
     .PARAMETER Message
@@ -13,13 +13,15 @@
     
     param (
         
+        # Message for the pop up window title bar    
         [Parameter(Position=0)]
         [string]
-        $Title = "Input Text",
+        $Title = "Enter Text",
         
+        # Message or Description for list of items
         [Parameter(Position=1)]
         [string]
-        $Message = "Enter a value:",
+        $Message = "Please enter a value here:",
         
         [Parameter()]
         [string]
