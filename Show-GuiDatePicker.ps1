@@ -1,4 +1,21 @@
-function Invoke-GuiDatePicker($title = 'Choose a Date') {
+function Show-GuiDatePicker {
+
+    <#
+    .SYNOPSIS
+    Display a Month Calendar in a pop up window
+    .DESCRIPTION
+    Displays a pop up window from which a non-technical user can choose a date during an automated routine
+    .PARAMETER Title
+    A title for the pop up window
+    #>
+
+    param  (
+        # A title for the pop up window
+        [Parameter()]
+        [string]    
+        $Title = 'Choose a Date'
+    )
+
     [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
      
