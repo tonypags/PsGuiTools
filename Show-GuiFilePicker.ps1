@@ -1,11 +1,12 @@
-﻿function Show-GuiFilePicker {   
+﻿function Show-GuiFilePicker {
+
     <#
     .SYNOPSIS
     Returns file objects from a GUI pop up window.
     .DESCRIPTION
     Displays a file picker window for the user, allowing non-technical users to leverage an automated routine.
     .PARAMETER Title
-    Message for the pop up window title bar
+    A title for the pop up window
     .PARAMETER InitialDirectory
     Default path location of the picker window
     .PARAMETER Extension
@@ -17,19 +18,38 @@
     .EXAMPLE
     Show-GuiFilePicker -Title 'Select a File' -Single
     #>
+
     [CmdletBinding()]
     param (
         
-        [string]$Title = "Select File(s)",
-        [string]$InitialDirectory=
-            "$($env:USERPROFILE)\Downloads",
-        [string]$Extension, 
-        [switch]$Single,
-        [switch]$outString
+        # A title for the pop up window
+        [Parameter()]
+        [string]
+        $Title = "Select File(s)",
+
+        # Default path location of the picker window
+        [Parameter()]
+        [string]
+        $InitialDirectory = "$($env:USERPROFILE)\Downloads",
+
+        # Filter the picker window by file type, supported: txt, csv, xml, pdf, xlsx, docx
+        [Parameter()]
+        [string]
+        $Extension, 
+
+        # Limit the picker window to a single selection
+        [Parameter()]
+        [switch]
+        $Single,
+
+        # Limit the output to a string value(s)
+        [Parameter()]
+        [switch]
+        $outString
         
     )
 
-    if(Test-Path $InitialDirectory) {
+    if (Test-Path $InitialDirectory) {
 
         if($Extension -match '\.|\*') {
             $Extension = $Extension -replace '\.' -replace '\*'
@@ -66,9 +86,13 @@
 
     }else{
     
-        Invoke-GuiPopupWarningOK `
-            -MessageTitle "Path not Found!" `
-            -MessageBody "The path $($InitialDirectory) cannot be found. "
+        $msgSplat = @{
+            MessageTitle = "Path not Found!"
+            MessageBody = "The path $($InitialDirectory) cannot be found."
+            Button = 'OK'
+            Icon = 'Error'
+        }
+        Show-MessageBox @msgSplat
             
     }
 }
