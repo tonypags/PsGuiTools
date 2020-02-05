@@ -1,4 +1,4 @@
-function Show-GuiPopupWindow {
+function Show-GuiMessageBox {
 
     <#
     .SYNOPSIS
@@ -23,12 +23,14 @@ function Show-GuiPopupWindow {
     param (
 
         # Message for the pop up window title bar
+        [Parameter(Position=0)]
         [string]
-        $Title='Select an Item',
+        $Title,
 
         # Message or Description for list of items
+        [Parameter(Position=1)]
         [string]
-        $Message='Select from the List of Items:',
+        $Message,
 
         # Select from available button types
         [Parameter()]
@@ -38,7 +40,7 @@ function Show-GuiPopupWindow {
         # Select from available message icons
         [Parameter()]
         [ValidateSet('Asterisk','Error','Exclamation','Hand','Information','None','Question','Warning','Stop')]
-        $Icon = 'Question'
+        $Icon = 'Asterisk'
 
     )
 
