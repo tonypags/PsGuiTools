@@ -6,14 +6,16 @@
     .DESCRIPTION
     Displays a popup window with which a non-technical user can enter a string value for an automated routine
     .PARAMETER Title
-    Message for the pop up window title bar
+    A title for the pop up window
     .PARAMETER Message
-    Message or Description for list of items
+    Message or description shown before the text input field
+    .PARAMETER DefaultText
+    The initial value of the user text input field
     #>
     
     param (
         
-        # Message for the pop up window title bar    
+        # A title for the pop up window
         [Parameter(Position=0)]
         [string]
         $Title = "Enter Text",
@@ -23,9 +25,10 @@
         [string]
         $Message = "Please enter a value here:",
         
+        # The initial value of the user text input field
         [Parameter()]
         [string]
-        $Default
+        $DefaultText
 
     )
 
@@ -42,7 +45,7 @@
     Process {}
 
     End {
-        [Microsoft.VisualBasic.Interaction]::InputBox($Message, $Title, $Default)
+        [Microsoft.VisualBasic.Interaction]::InputBox($Message, $Title, $DefaultText)
     }
 
 }

@@ -7,7 +7,7 @@
     .PARAMETER InputArray
     Array of strings to display for the user to pick from
     .PARAMETER Title
-    Message for the pop up window title bar
+    A title for the pop up window
     .PARAMETER Message
     Message or Description for list of items
     .PARAMETER Width
@@ -28,7 +28,7 @@
         [string[]]
         $InputArray,
 
-        # Message for the pop up window title bar
+        # A title for the pop up window
         [string]
         $Title='Select an Item',
 

@@ -6,7 +6,7 @@ function Show-GuiMessageBox {
     .DESCRIPTION
     Displays a popup window with which a non-technical user can interact, with options such as OK, Cancel, YesNo, Error, etc
     .PARAMETER Title
-    Message for the pop up window title bar
+    A title for the pop up window
     .PARAMETER Message
     Message or Description for list of items
     .PARAMETER Button
@@ -22,7 +22,7 @@ function Show-GuiMessageBox {
     
     param (
 
-        # Message for the pop up window title bar
+        # A title for the pop up window
         [Parameter(Position=0)]
         [string]
         $Title,
