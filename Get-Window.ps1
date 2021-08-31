@@ -29,20 +29,23 @@ Function Get-Window {
     {
     "Return":  true,
     "Rectangle":  {
-                      "UpperLeftX":  -364,
-                      "UpperLeftY":  -1079,
-                      "LowerRightX":  299,
-                      "LowerRightY":  -655
-                  },
+        "UpperLeftX":  -364,
+        "UpperLeftY":  -1079,
+        "LowerRightX":  299,
+        "LowerRightY":  -655
+    },
     "Size":  [
-                 663,
-                 424
-             ],
-    "Handle":  2230422,
-    "ProcessId":  10300,
-    "Name":  "notepad"
+        663,
+        424
+        ],
+        "Handle":  2230422,
+        "ProcessId":  10300,
+        "Name":  "notepad"
     } 
-        
+    .EXAMPLE
+    Get-Process notepad | Get-Window | convertto-json | Out-File 'savedWindows.json'
+
+    Saves the output to file
     #>
     [OutputType('System.Automation.WindowInfo')]
     [cmdletbinding()]
