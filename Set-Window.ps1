@@ -1,127 +1,102 @@
 Function Set-Window {
     <#
-        .SYNOPSIS
-            Sets the window size (height,width) and coordinates (x,y) of
-            a process window.
+    .SYNOPSIS
+    Sets the window size (height,width) and coordinates (x,y) of
+    a process window.
 
-        .DESCRIPTION
-            Sets the window size (height,width) and coordinates (x,y) of
-            a process window.
+    .DESCRIPTION
+    Sets the window size (height,width) and coordinates (x,y) of
+    a process window.
 
-        .PARAMETER ProcessId
-            Id of the process to determine the window characteristics
+    .NOTES
+    Edited heavily by tony@pagliaro.co: 
+    Taken from https://github.com/brad-do/ps-miscellany/blob/master/Set-Window.psm1
+    [73ef6c4]...who appears to have taken it from:
 
-        .PARAMETER X
-            Set the position of the window in pixels from the top.
+    Name: Set-Window
+    Author: Boe Prox
+    Version History
+        1.0//Boe Prox - 11/24/2015
+            - Initial build
 
-        .PARAMETER Y
-            Set the position of the window in pixels from the left.
+    .EXAMPLE
+    Get-Content 'savedWindows.json' |
+        ConvertFrom-Json |
+        Set-Window
 
-        .PARAMETER Width
-            Set the width of the window.
-
-        .PARAMETER Height
-            Set the height of the window.
-
-        .PARAMETER Passthru
-            Display the output object of the window.
-
-        .NOTES
-            Taken from https://github.com/brad-do/ps-miscellany/blob/master/Set-Window.psm1
-            [73ef6c4]...who appears to have taken it from:
-
-            Name: Set-Window
-            Author: Boe Prox
-            Version History
-                1.0//Boe Prox - 11/24/2015
-                    - Initial build
-
-        .OUTPUTS
-            System.Automation.WindowInfo
-
-        .EXAMPLE
-            Get-Process powershell | Set-Window -X 2040 -Y 142 -Passthru
-
-            ProcessName Size     TopLeft  BottomRight
-            ----------- ----     -------  -----------
-            powershell  1262,642 2040,142 3302,784   
-
-            Description
-            -----------
-            Set the coordinates on the window for the process PowerShell.exe
-        
+    Gets saved window data and applies it to the current window state.
     #>
-    [OutputType('System.Automation.WindowInfo')]
     [cmdletbinding()]
     Param (
-        [parameter(ValueFromPipelineByPropertyName=$True)]
-        [Alias('Id')]
-        $ProcessId,
-        [int]$X,
-        [int]$Y,
-        [int]$Width,
-        [int]$Height,
-        [switch]$Passthru
+        [parameter(ValueFromPipeline=$True)]
+        [psobject]$InputObject
     )
     Begin {
         Try{
             [void][Window]
         } Catch {
-        Add-Type @"
-              using System;
-              using System.Runtime.InteropServices;
-              public class Window {
-                [DllImport("user32.dll")]
-                [return: MarshalAs(UnmanagedType.Bool)]
-                public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+            Add-Type @"
+            using System;
+            using System.Runtime.InteropServices;
+            public class Window {
+              [DllImport("user32.dll")]
+              [return: MarshalAs(UnmanagedType.Bool)]
+              public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-                [DllImport("User32.dll")]
-                public extern static bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-              }
-              public struct RECT
-              {
-                public int Left;        // x position of upper-left corner
-                public int Top;         // y position of upper-left corner
-                public int Right;       // x position of lower-right corner
-                public int Bottom;      // y position of lower-right corner
-              }
+              [DllImport("User32.dll")]
+              public extern static bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
+            }
+            public struct RECT
+            {
+              public int UpperLeftX;    // x position of upper-left corner
+              public int UpperLeftY;    // y position of upper-left corner
+              public int LowerRightX;   // x position of lower-right corner
+              public int LowerRightY;   // y position of lower-right corner
+            }
 "@
+            # $OutputObject = [system.collections.arraylist]@()
         }
     }
     Process {
-        $Rectangle = New-Object RECT
-        $Handle = (Get-Process -Id $ProcessId).MainWindowHandle
-        $Return = [Window]::GetWindowRect($Handle,[ref]$Rectangle)
-        If ($null -eq $Width) {            
-            $Width = $Rectangle.Right - $Rectangle.Left            
-        }
-        If ($null -eq $Height) {
-            $Height = $Rectangle.Bottom - $Rectangle.Top
-        }
-        If ($Return) {
-            $Return = [Window]::MoveWindow($Handle, $x, $y, $Width, $Height,$True)
-        }
-        If ($Passthru.IsPresent) {
-            $Rectangle = New-Object RECT
-            $Return = [Window]::GetWindowRect($Handle,[ref]$Rectangle)
-            If ($Return) {
-                $Height = $Rectangle.Bottom - $Rectangle.Top
-                $Width = $Rectangle.Right - $Rectangle.Left
-                $Size = New-Object System.Management.Automation.Host.Size -ArgumentList $Width, $Height
-                $TopLeft = New-Object System.Management.Automation.Host.Coordinates -ArgumentList $Rectangle.Left, $Rectangle.Top
-                $BottomRight = New-Object System.Management.Automation.Host.Coordinates -ArgumentList $Rectangle.Right, $Rectangle.Bottom
-                If ($Rectangle.Top -lt 0 -AND $Rectangle.LEft -lt 0) {
-                    Write-Warning "Window is minimized! Coordinates will not be accurate."
-                }
-                $Object = [pscustomobject]@{
-                    ProcessName = (Get-Process -Id $ProcessId).ProcessName
-                    Size = $Size
-                    TopLeft = $TopLeft
-                    BottomRight = $BottomRight
-                }
-                $Object.PSTypeNames.insert(0,'System.Automation.WindowInfo')
-                $Object            
+
+        foreach ($obj in $InputObject) {
+            
+            if ($obj.Return) {
+                Write-Verbose "Processing $($obj.Name) ..."
+                $x = $obj.Rectangle.UpperLeftX
+                $y = $obj.Rectangle.UpperLeftY
+                $Width = $obj.Size[0]
+                $Height = $obj.Size[1]
+                $Handle = $obj.Handle
+                $null = [Window]::MoveWindow($Handle, $x, $y, $Width, $Height, $True)
+                ### ISSUE: This $Handle needs to be re-grabbed from active windows.
+                # Then do a foreach and set each instance to the RECT.
             }
+
         }
+
     }
+
 }
+
+<#
+
+Get-Process notepad | Get-Window | convertto-json
+{
+"Return":  true,
+"Rectangle":  {
+                  "UpperLeftX":  -364,
+                  "UpperLeftY":  -1079,
+                  "LowerRightX":  299,
+                  "LowerRightY":  -655
+              },
+"Size":  [
+             663,
+             424
+         ],
+"Handle":  2230422,
+"ProcessId":  10300,
+"Name":  "notepad"
+} 
+
+#>
