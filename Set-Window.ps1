@@ -28,8 +28,39 @@ Function Set-Window {
     #>
     [cmdletbinding()]
     Param (
-        [parameter(ValueFromPipeline=$True)]
-        [psobject]$InputObject
+        [parameter(
+            ValueFromPipeline=$true,
+            ParameterSetName='byPipeline'
+        )]
+        [psobject]$InputObject,
+
+        # An array of 2 int values for the UpperLeft corner, X first and then Y.
+        [Parameter(
+            ParameterSetName='byProperty'
+        )]
+        [AllowNull()]
+        [ValidateCount(2,2)]
+        [int[]]
+        $Position,
+        
+        # An array of 2 int values for the width and height, X first and then Y.
+        [Parameter(
+            ValueFromPipelineByPropertyName,
+            ParameterSetName='byProperty'
+        )]
+        [AllowNull()]
+        [ValidateCount(2,2)]
+        [int[]]
+        $Size,
+        
+        [Parameter(
+            Mandatory,
+            ValueFromPipelineByPropertyName,
+            ParameterSetName='byProperty'
+        )]
+        [Alias('Id')]
+        [int]
+        $ProcessId
     )
     Begin {
         Try{
@@ -61,17 +92,58 @@ Function Set-Window {
 
         foreach ($obj in $InputObject) {
             
-            if ($obj.Return) {
-                Write-Verbose "Processing $($obj.Name) ..."
-                $x = $obj.Rectangle.UpperLeftX
-                $y = $obj.Rectangle.UpperLeftY
-                $Width = $obj.Size[0]
-                $Height = $obj.Size[1]
-                $Handle = $obj.Handle
-                $null = [Window]::MoveWindow($Handle, $x, $y, $Width, $Height, $True)
+            if ($PSCmdlet.ParameterSetName -eq 'byPipeline') {
+                
+                if ($obj.Return) {
+                    Write-Verbose "Processing $($obj.Name) ..."
+                    $x = $obj.Rectangle.UpperLeftX
+                    $y = $obj.Rectangle.UpperLeftY
+                    $Width = $obj.Size[0]
+                    $Height = $obj.Size[1]
+                    
+                    
+                    $Handles = @($Process.MainWindowHandle)
+
+                    $Handle = $obj.Handle
+                    $null = [Window]::MoveWindow($Handle, $x, $y, $Width, $Height, $True)
+                    ### ISSUE: This $Handle needs to be re-grabbed from active windows.
+                    # Then do a foreach and set each instance to the RECT.
+                }
+
+            } elseif ($PSCmdlet.ParameterSetName -eq 'byProperty') {
+
+                $Process = Get-Process -Id $ProcessId
+                Write-Verbose "Processing $($Process.Name) ..."
+                $Handles = @($Process.MainWindowHandle)
+
+                foreach ($Handle in $Handles) {
+                    
+                    $Rectangle = New-Object RECT
+                    $Return = [Window]::GetWindowRect($Handle,[ref]$Rectangle)
+
+                    if ($Return) {
+
+                        if ($Size) {} else {
+                            $Size = @()
+                            $Size += [math]::Abs(($Rectangle.UpperLeftX - $Rectangle.LowerRightX))
+                            $Size += [math]::Abs(($Rectangle.UpperLeftY - $Rectangle.LowerRightY))
+                        }
+                        
+                        $x = $Rectangle.UpperLeftX
+                        $y = $Rectangle.UpperLeftY
+                        $Width  = $Size[0]
+                        $Height = $Size[1]
+                        $null = [Window]::MoveWindow($Handle, $x, $y, $Width, $Height, $True)
+                    }
+
+                }
+
+                
                 ### ISSUE: This $Handle needs to be re-grabbed from active windows.
                 # Then do a foreach and set each instance to the RECT.
+                
             }
+            
 
         }
 
