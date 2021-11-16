@@ -33,18 +33,18 @@ function Show-GuiOutputBox {
     Begin
     {
         # Load assemblies and draw form
-        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
         $Form = New-Object System.Windows.Forms.Form
         $Form.Size = New-Object System.Drawing.Size(700,600)
 
-        $OutputArray = [System.Collections.ArrayList]
+        $OutputArray = [System.Collections.ArrayList]@()
     }
 
     Process {
         
         foreach ($item in $InputArray) {
-            [void] $OutputArray.Add($item)
+            [void]$OutputArray.Add($item)
         }
 
     }
@@ -73,9 +73,9 @@ function Show-GuiOutputBox {
         if($Monospace) {
             $Form.Font = New-Object System.Drawing.Font("Consolas",10)
         }
-        $outputBox.Text = [System.Collections.ArrayList]
+        $outputBox.Text = [System.Collections.ArrayList]@()
         foreach ($item in $OutputArray) {
-            $outputBox.Text.Add("$($Item)`r`n")
+            $outputBox.Text += "$($Item)`r`n"
         }
         $Form.Controls.Add($outputBox) #activating the text box inside the primary window
 
