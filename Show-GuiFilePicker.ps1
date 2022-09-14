@@ -64,6 +64,8 @@
             'pdf'  {"PDF files (*.pdf) | *.pdf" ; break }
             'xlsx' {"Excel files (*.xlsx) | *.xlsx" ; break }
             'docx' {"Word files (*.docx) | *.docx" ; break }
+            # Add in anything you want, like this:
+            'ps1'  {"PowerShell scripts (*.ps1) | *.ps1" ; break }
 
             Default {"All Files (*.*) | *.*"}
         }
