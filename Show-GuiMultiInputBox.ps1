@@ -96,7 +96,7 @@
         # Create the form.
         $form = New-Object System.Windows.Forms.Form 
         $form.Text = $WindowTitle
-        $form.Size = New-Object System.Drawing.Size(600,310)
+        $form.Size = New-Object System.Drawing.Size(615,340)
         $form.FormBorderStyle = 'FixedSingle'
         $form.StartPosition = "CenterScreen"
         $form.AutoSizeMode = 'GrowAndShrink'
