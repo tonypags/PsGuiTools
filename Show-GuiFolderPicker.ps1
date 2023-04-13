@@ -27,7 +27,7 @@ Function Show-GuiFolderPicker {
         # Default path location of the picker window.
         [Parameter()]
         [ValidateSet('MyComputer','Recent','MyDocuments','Favorites','Desktop','Templates')]
-        $InitialDirectory = 'Recent',
+        $InitialDirectory = 'Desktop',
 
         # Limit the output to a string value
         [Parameter()]
