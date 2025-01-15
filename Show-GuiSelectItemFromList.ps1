@@ -15,7 +15,7 @@
     .PARAMETER Height
     Height of popup window in pixels
     .EXAMPLE
-    (Get-Process).Name | Show-GuiSelectItemFromList | Stop-Process -WhatIf
+    (Get-Process).Name | Show-GuiSelectItemFromList | % {Stop-Process -Name $_ -WhatIf}
     #>
     [CmdletBinding()]
     [OutputType([string])]
